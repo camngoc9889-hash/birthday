@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gillee — Phân Tích Chi Phí 06/2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --card: #1e2335;
+    --border: #2a3050;
+    --accent: #4f8ef7;
+    --green: #2dd4a0;
+    --red: #f76b6b;
+    --yellow: #f7c94f;
+    --text: #e8ecf4;
+    --muted: #7a85a3;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Be Vietnam Pro', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 40px 32px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 36px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+  }
+
+  .brand { font-size: 11px; font-weight: 600; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+  .date-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    margin-top: 32px;
+  }
+
+  /* Logic flow */
+  .logic-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 0;
+  }
+  .logic-step {
+    flex: 1;
+    padding: 0 20px;
+    border-right: 1px solid var(--border);
+  }
+  .logic-step:first-child { padding-left: 0; }
+  .logic-step:last-child { border-right: none; }
+  .logic-num { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .logic-title { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--muted); }
+  .logic-val { font-size: 20px; font-weight: 800; font-family: var(--mono); }
+  .logic-val.red { color: var(--red); }
+  .logic-val.yellow { color: var(--yellow); }
+  .logic-val.green { color: var(--green); }
+  .logic-val.accent { color: var(--accent); }
+  .logic-sub { font-size: 11px; color: var(--muted); margin-top: 5px; line-height: 1.6; }
+
+  /* Comparison table */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .cg-head {
+    padding: 12px 18px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+  }
+  .cg-head:not(:last-child) { border-right: 1px solid var(--border); }
+
+  .cg-row-label {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cg-row-label.sub { padding-left: 34px; font-size: 12px; color: var(--muted); font-weight: 400; }
+  .cg-row-label.total { font-weight: 700; background: rgba(79,142,247,0.05); }
+  .cg-row-label.profit { font-weight: 800; background: rgba(45,212,160,0.05); color: var(--green); border-bottom: none; }
+
+  .cg-cell {
+    padding: 13px 18px;
+    font-size: 12px;
+    font-family: var(--mono);
+    border-left: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .cg-cell.highlight { color: var(--text); }
+  .cg-cell.total { font-weight: 700; background: rgba(79,142,247,0.05); color: var(--accent); }
+  .cg-cell.profit { font-weight: 800; background: rgba(45,212,160,0.05); color: var(--green); border-bottom: none; }
+  .cg-cell.profit-bad { font-weight: 800; background: rgba(247,107,107,0.05); color: var(--red); border-bottom: none; }
+  .cg-cell.changed { color: var(--yellow); }
+  .cg-cell.improved { color: var(--green); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot.blue { background: var(--accent); }
+
+  /* Action grid */
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .action-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .action-card-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .action-card-title span {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800;
+  }
+  .action-card-title span.a { background: rgba(247,201,79,0.15); color: var(--yellow); }
+  .action-card-title span.b { background: rgba(45,212,160,0.15); color: var(--green); }
+
+  .action-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .action-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .action-row-label { color: var(--muted); }
+  .action-row-val { font-family: var(--mono); font-weight: 600; }
+  .from { color: var(--red); text-decoration: line-through; opacity: 0.6; margin-right: 6px; font-size: 11px; }
+  .to { color: var(--green); }
+
+  /* Summary */
+  .summary-box {
+    background: linear-gradient(135deg, rgba(45,212,160,0.08), rgba(79,142,247,0.08));
+    border: 1px solid rgba(45,212,160,0.25);
+    border-radius: 12px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .summary-box .big { font-size: 30px; font-weight: 800; font-family: var(--mono); color: var(--green); }
+  .summary-box .label { font-size: 11px; color: var(--muted); margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .summary-box .note { font-size: 12.5px; color: var(--muted); max-width: 480px; line-height: 1.85; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">Gillee — Cost Analysis</div>
+    <h1>Phương Án Tối Ưu Chi Phí 06/2026</h1>
+  </div>
+  <div class="date-badge">Tháng 06 / 2026 &nbsp;·&nbsp; Phí sàn 25% → 31%</div>
+</header>
+
+<!-- Logic flow -->
+<div class="section-label">Logic bù trừ</div>
+<div class="logic-box">
+  <div class="logic-step">
+    <div class="logic-num">Vấn đề</div>
+    <div class="logic-title">Phí sàn tăng thêm</div>
+    <div class="logic-val red">−128,400,000đ</div>
+    <div class="logic-sub">6% × NMV 2,140,000,000<br>25% → 31%</div>
+  </div>
+  <div class="logic-step">
+    <div class="logic-num">Giải pháp 1</div>
+    <div class="logic-title">Tăng giá bán 5%</div>
+    <div class="logic-val yellow">+107,000,000đ</div>
+    <div class="logic-sub">5% × NMV 2,140,000,000<br>GMV & NMV giữ nguyên</div>
+  </div>
+  <div class="logic-step">
+    <div class="logic-num">Còn thiếu</div>
+    <div class="logic-title">ADS cần bù</div>
+    <div class="logic-val accent">21,400,000đ</div>
+    <div class="logic-sub">128.4M − 107M<br>Cắt ~1 điểm % ADS</div>
+  </div>
+  <div class="logic-step">
+    <div class="logic-num">Kết quả</div>
+    <div class="logic-title">Lợi nhuận</div>
+    <div class="logic-val green">✓ Giữ nguyên</div>
+    <div class="logic-sub">Nhân sự & CMS<br>không bị ảnh hưởng</div>
+  </div>
+</div>
+
+<!-- Comparison table -->
+<div class="section-label">So sánh 3 kịch bản</div>
+<div class="compare-grid">
+  <div class="cg-head">Chỉ số</div>
+  <div class="cg-head">Gốc 06/2026</div>
+  <div class="cg-head">Phí sàn 31%<br>Không xử lý</div>
+  <div class="cg-head">✓ Phương án<br>Tăng giá + ADS</div>
+
+  <div class="cg-row-label"><span class="dot blue"></span> NMV</div>
+  <div class="cg-cell highlight">2,140,000,000</div>
+  <div class="cg-cell highlight">2,140,000,000</div>
+  <div class="cg-cell highlight">2,140,000,000</div>
+
+  <div class="cg-row-label sub">Lời thêm từ tăng giá 5%</div>
+  <div class="cg-cell">—</div>
+  <div class="cg-cell">—</div>
+  <div class="cg-cell improved">+107,000,000</div>
+
+  <div class="cg-row-label sub">Phí sàn</div>
+  <div class="cg-cell">535,000,000<br><span style="font-size:10px">25%</span></div>
+  <div class="cg-cell changed">663,400,000<br><span style="font-size:10px">31%</span></div>
+  <div class="cg-cell changed">663,400,000<br><span style="font-size:10px">31%</span></div>
+
+  <div class="cg-row-label sub">ADS</div>
+  <div class="cg-cell">269,561,533<br><span style="font-size:10px">12.6%</span></div>
+  <div class="cg-cell">269,561,533<br><span style="font-size:10px">12.6%</span></div>
+  <div class="cg-cell improved">248,161,533<br><span style="font-size:10px">~11.6%</span></div>
+
+  <div class="cg-row-label sub">CMS Value</div>
+  <div class="cg-cell">49,220,000<br><span style="font-size:10px">2.3%</span></div>
+  <div class="cg-cell">49,220,000<br><span style="font-size:10px">2.3%</span></div>
+  <div class="cg-cell">49,220,000<br><span style="font-size:10px">2.3%</span></div>
+
+  <div class="cg-row-label sub">Nhân sự livestream + content</div>
+  <div class="cg-cell">707,487,500<br><span style="font-size:10px">3.35%</span></div>
+  <div class="cg-cell">707,487,500<br><span style="font-size:10px">3.35%</span></div>
+  <div class="cg-cell">707,487,500<br><span style="font-size:10px">3.35%</span></div>
+
+  <div class="cg-row-label total">Tổng chi phí trong sàn</div>
+  <div class="cg-cell total">853,781,533<br><span style="font-size:10px">39.9%</span></div>
+  <div class="cg-cell" style="font-weight:700;color:var(--red)">982,181,533<br><span style="font-size:10px">45.9%</span></div>
+  <div class="cg-cell total">960,781,533<br><span style="font-size:10px">44.9%</span></div>
+
+  <div class="cg-row-label profit">Lợi nhuận còn lại</div>
+  <div class="cg-cell profit">1,286,218,467<br><span style="font-size:10px">60.1%</span></div>
+  <div class="cg-cell profit-bad">1,157,818,467<br><span style="font-size:10px">−128.4M ⚠️</span></div>
+  <div class="cg-cell profit">1,286,218,467<br><span style="font-size:10px">✓ Giữ nguyên</span></div>
+</div>
+
+<!-- Actions -->
+<div class="section-label">Hành động cụ thể</div>
+<div class="action-grid">
+  <div class="action-card">
+    <div class="action-card-title"><span class="a">1</span> Tăng giá bán</div>
+    <div class="action-row">
+      <span class="action-row-label">Mức tăng giá</span>
+      <span class="action-row-val to">+5%</span>
+    </div>
+    <div class="action-row">
+      <span class="action-row-label">GMV / NMV</span>
+      <span class="action-row-val" style="color:var(--muted)">Giữ nguyên</span>
+    </div>
+    <div class="action-row">
+      <span class="action-row-label">Lời thêm (5% × NMV)</span>
+      <span class="action-row-val to">+107,000,000đ</span>
+    </div>
+    <div class="action-row">
+      <span class="action-row-label">Bù được % phí sàn tăng</span>
+      <span class="action-row-val" style="color:var(--yellow)">83.3%</span>
+    </div>
+  </div>
+
+  <div class="action-card">
+    <div class="action-card-title"><span class="b">2</span> Tối ưu ADS</div>
+    <div class="action-row">
+      <span class="action-row-label">ADS % NMV</span>
+      <span class="action-row-val"><span class="from">12.6%</span><span class="to">~11.6%</span></span>
+    </div>
+    <div class="action-row">
+      <span class="action-row-label">Giá trị cần cắt</span>
+      <span class="action-row-val" style="color:var(--yellow)">−21,400,000đ</span>
+    </div>
+    <div class="action-row">
+      <span class="action-row-label">Mức độ tác động</span>
+      <span class="action-row-val to">Nhẹ — chỉ 1 điểm %</span>
+    </div>
+    <div class="action-row">
+      <span class="action-row-label">Nhân sự / CMS</span>
+      <span class="action-row-val to">Giữ nguyên 100%</span>
+    </div>
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="section-label">Kết luận</div>
+<div class="summary-box">
+  <div>
+    <div class="label">Lợi nhuận giữ nguyên</div>
+    <div class="big">1,286,218,467đ</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:5px;font-family:var(--mono)">60.1% margin trên NMV</div>
+  </div>
+  <div class="note">
+    Tăng giá 5% không làm thay đổi GMV/NMV nhưng tạo thêm <strong style="color:var(--yellow)">107M lợi nhuận</strong>, bù được <strong style="color:var(--text)">83%</strong> phần phí sàn tăng.
+    Phần còn lại <strong style="color:var(--accent)">21.4M</strong> chỉ cần cắt ADS <strong style="color:var(--text)">~1 điểm %</strong> (12.6% → 11.6%) là đủ cân bằng.
+    Nhân sự livestream, content và CMS giữ nguyên hoàn toàn.
+  </div>
+</div>
+
+</body>
+</html>
